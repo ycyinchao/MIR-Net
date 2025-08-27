@@ -40,10 +40,16 @@ def test(opt,Network,Datasets):
             test_loader = DataLoader(dataset, batch_size=1, shuffle=False, num_workers=8)
 
             cost_time = 0
+            images005 = ['COD10K-CAM-1-Aquatic-15-SeaHorse-1110', 'COD10K-CAM-1-Aquatic-7-Flounder-262', 'COD10K-CAM-2-Terrestrial-23-Cat-1328', 'COD10K-CAM-3-Flying-64-Moth-4448', 'COD10K-CAM-1-Aquatic-3-Crab-35', 'COD10K-CAM-1-Aquatic-14-ScorpionFish-896', 'COD10K-CAM-3-Flying-65-Owl-4638', 'COD10K-CAM-3-Flying-56-Cicada-3460', 'COD10K-CAM-3-Flying-50-Bat-2975', 'COD10K-CAM-2-Terrestrial-26-Chameleon-1692', 'COD10K-CAM-3-Flying-64-Moth-4452']
+
+
+
 
             for image, mask, (H, W), name in test_loader:
+                if name[0].split('.')[0] not in images005:
+                    continue
                 start_time = time.perf_counter()
-                res, out_dst = model(image.cuda().float(),(H,W))
+                res, out_dst = model(image.cuda().float(),(H,W),"000_100high500low_"+name[0].split('.')[0])
                 cost_time += time.perf_counter() - start_time
 
                 res = res.sigmoid().data.cpu().numpy().squeeze()
@@ -61,7 +67,7 @@ def test(opt,Network,Datasets):
 
 if __name__=='__main__':
 
-    method = '31_wM_test1'
+    method = 'MIR-Net'
     parser = argparse.ArgumentParser()
     parser.add_argument('--trainsize', type=int, default=384, help='testing size')
     parser.add_argument('--pth_path', type=str, default='./checkpoints/{}/model-best.pth'.format(method))
